@@ -1,4 +1,5 @@
-OpenWRT-Tools
+Embedded System Project
 =============
 
-Some tools used on OpenWRT
+This repository is only for Embedded System Project.
+A development on OpenWRT with TP-Link MR3420
