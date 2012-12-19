@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <openssl/md5.h>
 #include <curl/curl.h>
 #include "tunet_protocol.h"
+#include "md5.h"
 
 size_t write_data(void* buffer, size_t size, size_t nmemb, void* userp)
 {
@@ -15,10 +15,10 @@ void md5_cal(char* input, char* output)
 {
 	unsigned char value[16];
 	int i;
-	MD5_CTX ctx;
+	MD5Context ctx;
 	MD5_Init(&ctx);
 	MD5_Update(&ctx,(void*)input,strlen(input));
-	MD5_Final(value,&ctx);
+	MD5_Final(&ctx, value);
 	for(i = 0; i < 16; i++)
 		sprintf(output+2*i,"%02x",value[i]);
 }
@@ -117,7 +117,7 @@ int tunet_login_with_passwd(char* user_name, char* passwd, char* result, int len
 }
 
 
-int tunet_login_md5(char* user_name, char* md5, char* result, int len)
+int tunet_login_with_md5(char* user_name, char* md5, char* result, int len)
 {
 	CURL* curl;
 	int i, slen;

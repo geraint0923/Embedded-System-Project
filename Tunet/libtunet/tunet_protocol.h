@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <curl/curl.h>
-#include <openssl/md5.h>
 
 /*
  * parameters:
