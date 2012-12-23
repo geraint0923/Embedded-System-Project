@@ -12,7 +12,7 @@
 
 static int exit_flag = 0;
 static struct mg_context *ctx;
-static char server_name[128];
+static char server_name[] = "Router Server";
 
 static const char *options[] = {
 	"document_root", "./public",
@@ -47,6 +47,14 @@ static void init_signal() {
 int main(int argc, char **argv) {
 	init_signal();
 	ctx = mg_start(&router_server_callback, NULL, options);
+	if(!ctx) {
+		printf("Null context, failed to start the mongoose server.\n");
+		return -1;
+	}
+	printf("%s started on port(s) %s with web root [%s]\n",
+			server_name, mg_get_option(ctx, "listening_ports"),
+			mg_get_option(ctx, "document_root"));
+
 	while(exit_flag == 0) {
 		sleep(1);
 	}
