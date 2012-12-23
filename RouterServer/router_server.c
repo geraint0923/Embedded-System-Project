@@ -26,7 +26,7 @@ static void signal_handler(int sig_num) {
 
 static void *router_server_callback(enum mg_event ev, struct mg_connection *conn) {
 	const struct mg_request_info *ri = mg_get_request_info(conn);
-	if(ev == MG_NEW_REQUEST) {
+	if(ev == MG_NEW_REQUEST && !strcmp(ri->request_method, "GET") &&!strcmp(ri->uri, "/test")) {
 		printf("new connection\n");
 		mg_printf(conn, 
 				"HTTP/1.0 200 OK\r\n"
