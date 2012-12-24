@@ -1,4 +1,5 @@
 #include "mongoose.h"
+#include "query_handler.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,15 +26,13 @@ static void signal_handler(int sig_num) {
 }
 
 static void *router_server_callback(enum mg_event ev, struct mg_connection *conn) {
-	const struct mg_request_info *ri = mg_get_request_info(conn);
-	if(ev == MG_NEW_REQUEST && !strcmp(ri->request_method, "GET") &&!strcmp(ri->uri, "/test")) {
-		printf("new connection\n");
-		mg_printf(conn, 
-				"HTTP/1.0 200 OK\r\n"
-				"Content-Type: text/json\r\n\r\n"
-				"{ \"a\": \"aaa\", \"b\": \"bbb\"}"
-				);
-		return "";
+	const struct mg_request_info *ri = mg_get_request_info(conn); 
+	void *ret = NULL;
+	if(ev == MG_NEW_REQUEST) {
+		printf("new connection method:%s  uri:%s\n", ri->request_method, ri->uri);
+		ret = query_handle(conn);
+		printf("0x%08x\n", ret);
+		return ret;
 	}
 
 	return NULL;

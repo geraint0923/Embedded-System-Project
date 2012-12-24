@@ -13,5 +13,7 @@ extern struct query_handler query_handler_list[];
 
 extern int nr_query_handler;
 
+void *query_handle(struct mg_connection *conn);
+
 
 #endif
