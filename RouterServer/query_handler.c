@@ -6,54 +6,79 @@
 #include <string.h>
 #include <unistd.h>
 
+#define BUFFER_LEN	128
+
 #define HTTP_HEADER_JSON		"HTTP/1.0 200 OK\r\n" \
 								"Content-Type: text/json\r\n\r\n" 
 
 static void *query_tunet_add_user(struct mg_connection *conn) {
 	const struct mg_request_info *ri = mg_get_request_info(conn);
+	char user[BUFFER_LEN], passwd[BUFFER_LEN];
+	int qlen = strlen(ri->query_string);
+
+	memset(user, 0, BUFFER_LEN);
+	memset(passwd, 0, BUFFER_LEN);
+
+	mg_get_var(ri->query_string, qlen, "user", user, BUFFER_LEN);
+	mg_get_var(ri->query_string, qlen, "passwd", passwd, BUFFER_LEN);
+
+	printf("%s|||%s\n", user, passwd);
 	mg_printf(conn, HTTP_HEADER_JSON
 					"{\"a\":\"aaa\",\"b\":\"bbbbbb\"}");
-	printf("printf!\n");
+
 	return "";
 }
 
 static void *query_tunet_rm_user(struct mg_connection *conn) {
 	const struct mg_request_info *ri = mg_get_request_info(conn);
+	char user[BUFFER_LEN];
+	int qlen = strlen(ri->query_string);
+
+	memset(user, 0, BUFFER_LEN);
+
+	mg_get_var(ri->query_string, qlen, "user", user, BUFFER_LEN);
+
+
+	return NULL;
+}
+
+static void *query_tunet_user_list(struct mg_connection *conn) {
+	//const struct mg_request_info *ri = mg_get_request_info(conn);
 	return NULL;
 }
 
 static void *query_tunet_login(struct mg_connection *conn) {
-	const struct mg_request_info *ri = mg_get_request_info(conn);
+	//const struct mg_request_info *ri = mg_get_request_info(conn);
 	return NULL;
 }
 
 static void *query_tunet_logout(struct mg_connection *conn) {
-	const struct mg_request_info *ri = mg_get_request_info(conn);
+	//const struct mg_request_info *ri = mg_get_request_info(conn);
 	return NULL;
 }
 
 static void *query_tunet_check_online(struct mg_connection *conn) {
-	const struct mg_request_info *ri = mg_get_request_info(conn);
+	//const struct mg_request_info *ri = mg_get_request_info(conn);
 	return NULL;
 }
 
 static void *query_download_add_task(struct mg_connection *conn) {
-	const struct mg_request_info *ri = mg_get_request_info(conn);
+	//const struct mg_request_info *ri = mg_get_request_info(conn);
 	return NULL;
 }
 
 static void *query_download_task_list(struct mg_connection *conn) {
-	const struct mg_request_info *ri = mg_get_request_info(conn);
+	//const struct mg_request_info *ri = mg_get_request_info(conn);
 	return NULL;
 }
 
 static void *query_download_remove_task(struct mg_connection *conn) {
-	const struct mg_request_info *ri = mg_get_request_info(conn);
+	//const struct mg_request_info *ri = mg_get_request_info(conn);
 	return NULL;
 }
 
 static void *query_download_task_set_state(struct mg_connection *conn) {
-	const struct mg_request_info *ri = mg_get_request_info(conn);
+	//const struct mg_request_info *ri = mg_get_request_info(conn);
 	return NULL;
 }
 
