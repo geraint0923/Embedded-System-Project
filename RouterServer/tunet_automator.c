@@ -3,6 +3,7 @@
 #include <string.h>
 #include <signal.h>
 #include <pthread.h>
+#include <unistd.h>
 #include "tunet_automator.h"
 
 #define USER_COUNT	128
@@ -29,6 +30,9 @@ static int find_available_user() {
 }
 
 static void *worker_thread(void *pvoid) {
+	//to avoid the stupid warning
+	pvoid = pvoid;
+
 	pthread_detach(pthread_self());
 	while(ta_try_login) {
 		int idx = find_available_user();
@@ -56,6 +60,7 @@ static void *worker_thread(void *pvoid) {
 		}
 		sleep(SWITCH_SEC);
 	}
+	return NULL;
 }
 
 int ta_add_user(char *user, char *md5_passwd) {

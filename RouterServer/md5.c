@@ -59,7 +59,7 @@ static unsigned char PADDING[64] =
 }
 static void MD5_Encode(unsigned char * output, unsigned int * input, int len)
 {
-	unsigned int i, j;
+	int i, j;
 	for (i = 0, j = 0; j < len; i++, j += 4)
 	{
 		output[j] = (unsigned char) (input[i] & 0xff);
@@ -71,7 +71,7 @@ static void MD5_Encode(unsigned char * output, unsigned int * input, int len)
 
 static void MD5_Decode(unsigned int * output, unsigned char * input, int len)
 {
-	unsigned int i, j;
+	int i, j;
 	for (i = 0, j = 0; j < len; i++, j += 4)
 	{
 		output[i] = ((unsigned int) input[j]) |
@@ -186,12 +186,12 @@ void MD5_Update(MD5Context * context, unsigned char * buf, int len)
 
 	partLen = 64 - index;
 
-	if (len >= partLen) 
+	if ((unsigned int)len >= partLen) 
 	{
 		memcpy((char *) &context->buffer[index], (char *) buf, partLen);
 		MD5_Transform(context->state, context->buffer);
 
-		for (i = partLen; i + 63 < len; i += 64)
+		for (i = partLen; i + 63 < (unsigned int)len; i += 64)
 			MD5_Transform(context->state, &buf[i]);
 		index = 0;
 	}

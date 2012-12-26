@@ -15,7 +15,7 @@ static int exit_flag = 0;
 static struct mg_context *ctx;
 static char server_name[] = "Router Server";
 
-static const char *options[] = {
+static char *options[] = {
 	"document_root", "./public",
 	"listening_ports", "8080",
 	NULL
@@ -31,7 +31,7 @@ static void *router_server_callback(enum mg_event ev, struct mg_connection *conn
 	if(ev == MG_NEW_REQUEST) {
 		printf("new connection method:%s  uri:%s\n", ri->request_method, ri->uri);
 		ret = query_handle(conn);
-		printf("0x%08x\n", ret);
+	//	printf("0x%08x\n", ret);
 		return ret;
 	}
 
@@ -45,7 +45,11 @@ static void init_signal() {
 
 int main(int argc, char **argv) {
 	init_signal();
-	ctx = mg_start(&router_server_callback, NULL, options);
+	if(argc == 2) {
+		options[3] = (char*)malloc(strlen(argv[1])+1);
+		sprintf(options[3], "%s", argv[1]);
+	}
+	ctx = mg_start(&router_server_callback, NULL, (const char**)options);
 	if(!ctx) {
 		printf("Null context, failed to start the mongoose server.\n");
 		return -1;

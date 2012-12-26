@@ -63,7 +63,7 @@ static void *query_tunet_check_online(struct mg_connection *conn) {
 	int ret = ta_check_online(user, 128, &flow);
 	if(ret) {
 		mg_printf(conn, HTTP_HEADER_JSON
-				"{\"status\":\"online\",\"user\":\"%s\",\"flow\":%ld}", user, flow);
+				"{\"status\":\"online\",\"user\":\"%s\",\"flow\":%lld}", user, flow);
 	} else {
 		mg_printf(conn, HTTP_HEADER_JSON
 				"{\"status\":\"offline\",\"user\":\"\",\"flow\":0}");
@@ -95,12 +95,13 @@ static void *query_tunet_user_list(struct mg_connection *conn) {
 	for(i = 0; i < len; ++i) {
 		if(i)
 			mg_printf(conn, ",");
-		mg_printf(conn, "{\"user\":\"%s\",\"flow\":%ld}", tc_list[i].user, tc_list[i].input_bytes);
+		mg_printf(conn, "{\"user\":\"%s\",\"flow\":%lld}", tc_list[i].user, tc_list[i].input_bytes);
 	}
 	mg_printf(conn, "]");
 	return "";
 }
 
+/*
 static void *query_download_add_task(struct mg_connection *conn) {
 	//const struct mg_request_info *ri = mg_get_request_info(conn);
 	return NULL;
@@ -120,7 +121,7 @@ static void *query_download_task_set_state(struct mg_connection *conn) {
 	//const struct mg_request_info *ri = mg_get_request_info(conn);
 	return NULL;
 }
-
+*/
 
 void *query_handle(struct mg_connection *conn) {
 	int i;
@@ -167,6 +168,7 @@ struct query_handler query_handler_list[] = {
 		.uri = "/tunet/user_list",
 		.handler = query_tunet_user_list,
 	},
+	/*
 	{
 		.method = "GET",
 		.uri = "/download/add_task",
@@ -187,6 +189,7 @@ struct query_handler query_handler_list[] = {
 		.uri = "/download/task_set_state",
 		.handler = query_download_task_set_state,
 	},
+	*/
 };
 
 int nr_query_handler = sizeof(query_handler_list) / sizeof(struct query_handler);

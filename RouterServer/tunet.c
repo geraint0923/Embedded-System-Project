@@ -23,9 +23,9 @@ static void get_ip_from_login_result(char* result, unsigned char ip[4]) {
 			break;
 		}
 	}
-	sscanf(tmp,"%lld",&ret);
-	printf("%s,%lld\n",tmp,ret);
-	present = (char*) &ret;
+	sscanf(tmp, "%llu", &ret);
+	//printf("%s,%lld\n",tmp,ret);
+	present = (unsigned char*) &ret;
 	ip[0] = present[4];
 	ip[1] = present[5];
 	ip[2] = present[6];
@@ -58,7 +58,7 @@ static long long get_time_from_check_online_result(char* result) {
 			break;
 		}
 	}
-	sscanf(tmp,"%ld",&ret);
+	sscanf(tmp,"%lld",&ret);
 	return ret;
 }
 
@@ -93,6 +93,7 @@ static int to_period(char* input, int index) {
 	return i;
 }
 
+/*
 static int change_display_mode() {
 	struct termios term;
 	int err;
@@ -120,44 +121,27 @@ static int is_display() {
 	else
 		return 0;
 }
+*/
 
+/*
 static int get_passwd(char* input, int len) {
 	char tmp[1024];
-	/*
-	if(is_display())
-		printf("before change : display\n");
-	else
-		printf("before change : not display\n");
-	*/
 	if(change_display_mode()) {
 		scanf("%s",tmp);
-		/*
-		printf("after first change : ");
-		if(is_display())
-			printf("display\n");
-		else
-			printf("not display\n");
-		*/
 		if(!change_display_mode())
 			return 0;
 		strncpy(input,tmp,len);
-		/*
-		printf("after second change : ");
-		if(is_display())
-			printf("display\n");
-		else
-			printf("not display\n");
-		*/
 		return 1;
 	}
 	else
 		return 0;
 
 }
+*/
 
 static size_t write_data(void* buffer, size_t size, size_t nmemb, void* userp) {
 	sprintf((char*)userp,"%s",(char*)buffer);
-	printf("user space : %s\n", userp);
+	//printf("user space : %s\n", userp);
 	return size * nmemb;
 }
 
@@ -173,7 +157,6 @@ static void md5_cal(char* input, char* output) {
 }
 
 static int post_data_to(char* url, char* post_data, char* value) {	
-	int i;
 	CURL* curl;
 	char all_value[1024];
 
@@ -214,6 +197,7 @@ static void trim_string(char* str) {
 	}
 }
 
+/*
 static long long get_used_byte(char* in_result) {
 	int count = 2, i, len = strlen(in_result), stop;
 	char result[1024];
@@ -229,10 +213,9 @@ static long long get_used_byte(char* in_result) {
 	sscanf(result+stop,"%lld",&ret);
 	return ret;
 }
+*/
 
 static int login_with_passwd(char* user_name, char* passwd, char* result, int len) {
-	CURL* curl;
-	int i, slen;
 
 	char url[1024];
 	char passwd_md5[1024];
@@ -253,7 +236,7 @@ static int login_with_passwd(char* user_name, char* passwd, char* result, int le
 	trim_string(all_value);
 
 	strncpy(result,all_value,len);
-	printf("result:%s\n", result);
+	//printf("result:%s\n", result);
 	
 	if(result[0] <= '9' && result[0] >= '0')
 		return 0;
@@ -263,8 +246,6 @@ static int login_with_passwd(char* user_name, char* passwd, char* result, int le
 
 
 static int login_with_md5(char* user_name, char* md5, char* result, int len) {
-	CURL* curl;
-	int i, slen;
 
 	char url[1024];
 	char post_data[2048];
@@ -291,10 +272,8 @@ static int login_with_md5(char* user_name, char* md5, char* result, int len) {
 
 
 static int logout(char* result, int len) {
-	CURL* curl;
 	char url[1024];
 	char all_value[1024];
-	int i, slen;
 
 	sprintf(url,"http://net.tsinghua.edu.cn/cgi-bin/do_logout");
 
@@ -312,7 +291,6 @@ static int logout(char* result, int len) {
 }
 
 static int check_online(char* result, int len) {
-	CURL* curl;
 	char url[1024];
 	char post_data[1024];
 	char all_value[1024];
@@ -334,9 +312,11 @@ static int check_online(char* result, int len) {
 		return 0;
 }
 
+/*
 int tunet_get_passwd(char *input, int len) {
 	return 0;
 }
+*/
 
 #define BUFFER_LEN		1024
 

@@ -13,7 +13,7 @@ struct tunet_connection {
 	long long elapsed_time;
 };
 
-int tunet_get_passwd(char *input, int len);
+//int tunet_get_passwd(char *input, int len);
 
 void tunet_login(struct tunet_connection *tc, int is_md5);
 
