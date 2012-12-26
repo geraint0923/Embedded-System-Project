@@ -144,7 +144,7 @@ struct query_handler query_handler_list[] = {
 	},
 	{
 		.method = "GET",
-		.uri = "/tunet/rm_user",
+		.uri = "/tunet/remove_user",
 		.handler = query_tunet_rm_user,
 	},
 	{
