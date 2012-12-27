@@ -1,0 +1,25 @@
+<% for(var i=0; i<results.length; i++) {%>
+	<li id="res<%= i + start %>">
+		<img class="floatimg" id="markerimg<%= i + start %>"/>
+		<div class="floatcontent">
+			<a class="name"><%= results[i].name %></a>
+			<span class="addr"><%= results[i].addr %></span>
+			<span class="postcode"><%= results[i].postcode %></span>
+			<a class="url" href="<%= results[i].url %>"><%= results[i].url %></a>
+		</div>
+		
+		<div id="moreinfo<%= i + start %>" class="hidd">
+			<div class="hiddcontent">
+			<a class="name"><%= results[i].name %></a>
+			<span class="addr"><%= results[i].addr %></span>
+			<span class="postcode"><%= results[i].postcode %></span>
+			<a class="url" href="<%= results[i].url %>"><%= results[i].url %></a>	
+			</div>
+		</div>
+	</li>
+<% } %>
+<% if (results.length + start < resultlength - 1) { %>
+	<li id="moreitem">
+		More...
+	</li>
+<% } %>
