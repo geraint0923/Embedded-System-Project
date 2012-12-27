@@ -159,13 +159,14 @@ static void udp_broadcast(char *str) {
 		perror("socket");
 		return;
 	}
+	/*
 	int i = 1;
 	socklen_t len= sizeof(i);
 	setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &i, len);
-	
+	*/
 
 	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr.s_addr = inet_addr("192.168.23.255");
+	server_addr.sin_addr.s_addr = inet_addr("192.168.23.168");
 	server_addr.sin_port = htons(33333);  
 	addr_len=sizeof(server_addr);
 	sendto(sock, str, strlen(str), 0, (struct sockaddr*)&server_addr, addr_len);
