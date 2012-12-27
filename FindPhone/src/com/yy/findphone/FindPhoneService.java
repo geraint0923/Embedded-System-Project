@@ -1,5 +1,13 @@
 package com.yy.findphone;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -12,6 +20,10 @@ public class FindPhoneService extends Service {
 	private boolean isListening = false;
 	
 	private Thread listenThread = null;
+	
+	private String name = "newbie";
+	
+	private final String configPath = "/sdcard/findphone/name";
 	
 	private final IFindPhoneService.Stub binderStub = new IFindPhoneService.Stub() {
 
@@ -71,12 +83,39 @@ public class FindPhoneService extends Service {
 	}
 	
 	public void onCreate() {
-		
+		File file = new File(configPath);
+		if(file.exists()) {
+			try {
+				FileReader fr = new FileReader(file);
+				BufferedReader br = new BufferedReader(fr);
+				name = br.readLine();
+				br.close();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 		super.onCreate();
 	}
 	
 	public void onDestroy() {
-		
+		File file = new File(configPath);
+		if(file.exists()) {
+			file.delete();
+		}
+		try {
+			file.createNewFile();
+			FileOutputStream fos = new FileOutputStream(file);
+			fos.write(name.getBytes());
+			fos.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		super.onDestroy();
 	}
 	
