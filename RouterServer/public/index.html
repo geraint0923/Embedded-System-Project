@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Console</title>
+
+<link rel="stylesheet" href="jquery-ui-1.9.2.css" />
+<script type="text/javascript" src="jquery-1.8.3.js"></script>
+<script type="text/javascript" src="jquery-ui-1.9.2.js"></script>
+<script type="text/javascript" src="ejs.js"></script>
+
+<style>
+::-webkit-scrollbar-track-piece{background-color:#fff;}
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-thumb{background:#999; margin:2px;} 
+
+body {
+	margin:0;
+	padding:0;
+	background:#036;
+	font-family:Arial, Helvetica, sans-serif;
+}
+#container {
+	width:800px;
+	margin:auto;
+	background:#EEE;
+}
+#header {
+	margin:0;
+	padding:40px 20px 40px 80px;
+	background:#EEE;
+	color:#0CC;
+	font-size:30px;
+}
+#nav {
+	margin:0;
+	background:#0AA;
+	color:#FFF;
+}
+#headlink {
+	list-style: none;
+	overflow:auto;
+	margin:0;
+	padding:0px 0px 0px 5px;
+}
+#headlink li {
+	float:left;
+	padding:0px;
+}
+#headlink li a {
+	display:block;
+	text-decoration:none;
+	font-size:17px;
+	padding:8px;
+	color:#FEE;
+}
+#headlink li a:hover {
+	padding:8px;
+	text-decoration:none;
+	font-size:17px;
+	background:#AAA;
+}
+#content {
+	background:#FFE;
+	padding:0;
+	margin:0;
+}
+#content p {
+	margin-left: auto;
+	margin-right: auto;
+	text-align:center;
+	font-size:20px;
+	font-weight:bold;
+	color:#025;
+	margin:0;
+}
+#p1 {
+	padding:50px 0px 0px 25px;
+}
+#p4 {
+	padding:25px 0px 50px 25px;
+}
+#footer {
+	padding:2px;
+	font-size:10px;
+	color:#900;
+}
+.mybutton {
+	-moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
+	box-shadow:inset 0px 1px 0px 0px #ffffff;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #a7d6a9), color-stop(1, #c4deba) );
+	background:-moz-linear-gradient( center top, #a7d6a9 5%, #c4deba 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#a7d6a9', endColorstr='#c4deba');
+	background-color:#a7d6a9;
+	border:2px solid #608562;
+	display:inline-block;
+	color:#1e3d20;
+	font-family:arial;
+	font-size:22px;
+	font-weight:bold;
+	padding:7px 22px;
+	text-decoration:none;
+	text-shadow:1px 1px 0px #ffffff;
+}.mybutton:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #c4deba), color-stop(1, #a7d6a9) );
+	background:-moz-linear-gradient( center top, #c4deba 5%, #a7d6a9 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#c4deba', endColorstr='#a7d6a9');
+	background-color:#c4deba;
+}.mybutton:active {
+	position:relative;
+	top:1px;
+}
+</style>
+
+<script>
+$(function() {
+	// init
+//	$("#login").button();
+//	$("#logout").button();
+	$("#login").hide();
+	$("#logout").hide();
+	$("#status").html("Loading...").css("color", "#000");
+	$("#flow").html("Loading...").css("color", "#000");
+	$("#loading").hide();
+	// load inital state
+	$.ajax({
+		type: "get",
+		url: "http://192.168.220.142:6876/tunet/check_online",
+		success: function(data) {
+			json = eval(data);
+			if (json.status == 'online')
+			{
+				$("#login").hide();
+				$("#logout").show();
+				$("#status").html("Online").css("color", "#0F0");
+				$("#flow").html(geth(json.flow));
+			}
+			else if (json.status == 'offline')
+			{
+				$("#login").show();
+				$("#logout").hide();
+				$("#status").html("Offline").css("color", "#F00");
+				$("#flow").html("");
+			}
+			else
+				window.location.reload();
+		},
+		complete: function(){
+			$("#loading").html("");
+		},
+		error: function(){
+			alert("Error.");
+		}
+	});
+	$("#login").click(function(){
+		$("#loading").html("Loading...");
+		$.ajax({
+			type: "get",
+			url: "http://192.168.220.142:6876/tunet/login",
+			success: function(data){
+				if (data == '0')
+				{
+					$("#login").hide();
+					$("#logout").show();
+					$("#status").html("Online").css("color", "#0F0");
+				}
+				else if (data == '-1')
+					alert("We need more users!");
+				else
+					alert("Failed!");
+			},
+			complete: function(){
+				$("#loading").html("");
+			},
+			error: function(){
+				alert("Error.");
+			}
+		});
+	});
+	$("#logout").click(function(){
+		$("#loading").html("Loading...");
+		$.ajax({
+			type: "get",
+			url: "http://192.168.220.142:6876/tunet/logout",
+			success: function(data){
+				if (data == '0')
+				{
+					$("#login").show();
+					$("#logout").hide();
+					$("#status").html("Offline").css("color", "#F00");
+				}
+				else
+					alert("Failed!");
+			},
+			complete: function(){
+				$("#loading").html("");
+			},
+			error: function(){
+				alert("Error.");
+			}
+		});
+	});
+	
+	function geth(x) {
+		if (x > 1024*1024*1024)
+		{
+			return (x /(1024*1024*1024)).toFixed(2) + " GB";
+		}
+	}
+});
+
+</script>
+</head>
+<body>
+<div id="container">
+	<div id="header">
+    	Utility Console
+    </div>
+    <div id="nav">
+        <ul id="headlink">
+            <li><a href="index.html">Status</a></li>
+            <li><a href="users.html">Users</a></li>
+            <li><a href="download.html">Download</a></li>
+            <li><a href="about.html">About</a></li>
+        </ul>
+    </div>
+    <div id="content">
+    	<p id="p1">Current Status:  <span id="status">Online</span></p>
+<br/>
+        <p id="p2">Flow:  <span id="flow">1GB</span></p>
+        
+        <p id="p3"><span id="loading"></span></p>
+        <p id="p4"><button id="login" class="mybutton">Login</button>
+           <button id="logout" class="mybutton">Logout</button></p>
+	</div>
+	<div id="footer">Copyright Group X, 2012</div>
+</div>
+</body>
+</html>

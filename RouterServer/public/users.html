@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>DB Map Search</title>
+
+<link rel="stylesheet" href="jquery-ui-1.9.2.css" />
+<script type="text/javascript" src="jquery-1.8.3.js"></script>
+<script type="text/javascript" src="jquery-ui-1.9.2.js"></script>
+<script type="text/javascript" src="ejs.js"></script>
+
+<style>
+::-webkit-scrollbar-track-piece{background-color:#fff;}
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-thumb{background:#999; margin:2px;} 
+
+body {
+	margin:0;
+	padding:0;
+	background:#036;
+	font-family:Arial, Helvetica, sans-serif;
+}
+#container {
+	width:800px;
+	margin:auto;
+	background:#EEE;
+}
+#header {
+	margin:0;
+	padding:40px 20px 40px 80px;
+	background:#EEE;
+	color:#0CC;
+	font-size:30px;
+}
+#nav {
+	margin:0;
+	background:#0AA;
+	color:#FFF;
+}
+#headlink {
+	list-style: none;
+	overflow:auto;
+	margin:0;
+	padding:0px 0px 0px 5px;
+}
+#headlink li {
+	float:left;
+	padding:0px;
+}
+#headlink li a {
+	display:block;
+	text-decoration:none;
+	font-size:17px;
+	padding:8px;
+	color:#FEE;
+}
+#headlink li a:hover {
+	padding:8px;
+	text-decoration:none;
+	font-size:17px;
+	background:#AAA;
+}
+h1 {
+	margin-left:50px;
+	font-size:30px;
+	color:#066;
+}
+#userlist {
+	margin-left:auto;
+	margin-right:auto;
+	width:480px;
+	list-style:none;
+}
+#userlist li {
+	margin:0;
+	padding:0;
+}
+#userlist li:nth-child(odd) {
+	background:#9AC9A9;
+}
+#userlist li:nth-child(even) {
+	background:#7AB19D;
+}
+.cuser {
+	display:inline-block;
+	background:rgba(0,100,0,.05);
+	width:200px;
+	color:black;
+	padding:6px;
+	margin:0;
+}
+.cpasswd {
+	display:inline-block;
+	background:rgba(0,0,100,.05);
+	width:200px;
+	color:black;
+	padding:6px;
+	margin:0;
+}
+#liadd {
+	background:#0FC;
+}
+#userlist li:last-child {
+	background:#69F;
+}
+#userlist li:first-child {
+	background:#9F0;
+}
+#liaddbutton {
+	background:#CCC;
+}
+#newuser {
+	width:196px;
+	margin:6px;
+}
+#newpasswd {
+	width:196px;
+	margin:6px;
+}
+#footer {
+	padding:2px;
+	font-size:10px;
+	color:#900;
+	background:#89F;
+	text-align:right;
+}
+.mybutton {
+	background-color:#79bbff;
+	border:2px solid #84bbf3;
+	display:inline-block;
+	color:#ffffff;
+	font-family:arial;
+	font-size:12px;
+	font-weight:bold;
+	padding:4px 8px;
+	text-decoration:none;
+}.mybutton:hover {
+	background-color:#378de5;
+}.mybutton:active {
+	position:relative;
+	top:1px;
+}
+.newbutton {
+	background-color:#ffffff;
+	border:2px solid #dcdcdc;
+	display:inline-block;
+	color:#666666;
+	font-family:arial;
+	font-size:12px;
+	font-weight:bold;
+	padding:4px 8px;
+	text-decoration:none;
+}.newbutton:hover {
+	background-color:#f6f6f6;
+}.newbutton:active {
+	position:relative;
+	top:1px;
+}
+</style>
+
+<script>
+$(function() {
+	// init
+//	$("#login").hide();
+//	$("#logout").hide();
+//	$("#status").html("Loading...").css("color", "#000");
+//	$("#flow").html("Loading...").css("color", "#000");
+//	$("#loading").hide();
+	$("#liaddbutton").show();
+	$("#liadd").hide();
+	var usercount = 2;
+	// load inital state
+	function refreshuserlist() {
+	$.ajax({
+		type: "get",
+		url: "http://192.168.220.142:6876/tunet/user_list",
+		success: function(data) {
+			json = eval(data);
+			// $("#userlist").html("");
+			for (var i = 0; i < usercount; i++)
+				$("#us" + i).remove();
+			usercount = json.length;
+			for (var i = 0; i < json.length; i++)
+			{
+				(function(x) {
+					var tmp = "<li id=\"us" + x + "\"><span class=\"cuser\" id=\"un" + x + "\">" + json[x].user + "</span>";
+					tmp += "<span class=\"cpasswd\">" + geth(json[x].flow) + "</span>";
+					tmp += "<button class=\"mybutton\">X</button></li>";
+					$("#ulistheader").after(tmp);
+					$("#us" + x).click(function(){
+						doremoveuser(x);
+					});
+				})(i);
+			}
+		},
+		complete: function(){
+			$("#loading").html("");
+		},
+		error: function(){
+			alert("Error.");
+		}
+	});
+	}
+	
+	refreshuserlist();
+	
+	function doremoveuser(uid)
+	{
+		$.ajax({
+			type: "get",
+			url: "http://192.168.220.142:6876/tunet/rm_user",
+			data: {
+				user: $("#un" + uid).html()
+			},
+			success: function(data){
+				if (data == '0')
+				{
+					refreshuserlist();
+
+					$("#liaddbutton").show();
+					$("#liadd").hide();
+				}
+				else
+				{
+					alert("DeleteUserFailed" + data);
+				}
+			},
+			complete: function(){},
+			error: function(){
+				alert("Error.");
+			}
+		});
+	}
+	
+	$("#useradd").click(function() {
+		$.ajax({
+			type: "get",
+			url: "http://192.168.220.142:6876/tunet/add_user",
+			data: {
+				user: $("#newuser").val(),
+				passwd: $("#newpasswd").val()
+			},
+			success: function(data){
+				if (data == '0')
+				{
+					refreshuserlist();
+
+					$("#liaddbutton").show();
+					$("#liadd").hide();
+				}
+				else
+				{
+					alert("AddUserFailed" + data);
+				}
+			},
+			complete: function(){},
+			error: function(){
+				alert("Error.");
+			}
+		});
+	});
+	
+	$("#addnew").click(function(){
+		$("#liaddbutton").hide();
+		$("#liadd").show();
+		$("#newuser").val("");
+		$("#newpasswd").val("");
+	});
+	
+	function geth(x) {
+		if (x > 1024*1024*1024)
+		{
+			return (x /(1024*1024*1024)).toFixed(2) + " GB";
+		}
+		else if (x > 1024*1024)
+		{
+			return (x /(1024*1024)).toFixed(2) + " MB";
+		}
+		else if (x > 1024)
+		{
+			return (x /(1024)).toFixed(2) + " KB";
+		}
+		else
+		{
+			return x + " B";
+		}
+	}
+});
+
+</script>
+</head>
+<body>
+<div id="container">
+	<div id="header">
+    	User Manager
+    </div>
+    <div id="nav">
+        <ul id="headlink">
+            <li><a href="index.html">Status</a></li>
+            <li><a href="users.html">Users</a></li>
+            <li><a href="download.html">Download</a></li>
+            <li><a href="about.html">About</a></li>
+        </ul>
+    </div>
+    <div id="content">
+    	<h1>Users: </h1>
+        <ul id="userlist">
+            <li id="ulistheader">
+                <span class="cuser">UserName</span>
+                <span class="cpasswd">FlowUsed</span>
+            </li>
+            <li id="us0">
+                <span>Yangshen</span>
+                <span>1.234GB</span>
+                <button>Delete</button>
+            </li>
+            <li id="us1">
+                <span>Jiangdashen</span>
+                <span>53.134GB</span>
+                <button>Delete</button>
+            </li>
+            <li id="liadd">
+                <input id="newuser"></input>
+                <input id="newpasswd"></input>
+                <button id="useradd" class="newbutton">Add</button>
+            </li>
+    
+            <li id="liaddbutton">
+                <button id="addnew" class="newbutton">AddNew</button>
+            </li>
+        </ul>
+	</div>
+	<div id="footer">Copyright Group X, 2012</div>
+</div>
+</body>
+</html>
